@@ -1,4 +1,5 @@
 import User from "../schema/schemaUser.js";
+import friends from "../schema/schemaFriend.js";
 
 function update(req, res) {
   User.find({}, function (err, user) {
@@ -13,9 +14,13 @@ function update(req, res) {
           docs.forEach(function (doc) {
               users[doc._id] = doc;
           });
-        res.status(200).json({
-            "users" : users
-        });
+          friends.find({}, function(err, docs){
+            var friends = docs;
+            res.status(200).json({
+                "users" : users,
+                "friends" : friends
+            });
+          });
       });
     }
   });

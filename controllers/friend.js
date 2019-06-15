@@ -4,12 +4,12 @@ function friendRequest(req, res) {
   console.log(req.body)
   var friendSender = {
     id : req.body.userIdSender,
-    userId : [{ id : req.body.userIdRecipient, statusId : 1,  status : 'request send' }]
+    userId : [{ id : req.body.userIdRecipient, statusId : 1 }]
   }
 
   var friendRecipient = {
     id : req.body.userIdRecipient,
-    userId : [{ id : req.body.userIdRecipient, statusId : 4,  status : 'request received' }]
+    userId : [{ id : req.body.userIdRecipient, statusId : 5 }]
   }
 
   friends.findOne({ id : req.body.userIdSender }, (err, result) =>{
@@ -22,8 +22,7 @@ function friendRequest(req, res) {
         { $addToSet: 
           {userId :
             { id : req.body.userIdRecipient, 
-              statusId : 1,  
-              status : 'request send'
+              statusId :req.body.statusSender
             }
           }
         }, function(err, result){
@@ -43,24 +42,15 @@ function friendRequest(req, res) {
         { $addToSet:
           {userId :
             { id : req.body.userIdSender, 
-              statusId : 1,  
-              status : 'request send'
+              statusId : req.body.statusRecipient
             }
           }
-        }, function(err, result){
-        console.log(err)
-        console.log(result);
-      });
+        },  function(err, result){
+            
+            });
     }
   });
 
 }
 
-/* friends.findOne({ 'userId.id' : req.body.userIdRecipient }, function(err , result){
- console.log(result)
- if(result === null){
-   console.log('ok')
-    friends.update({'id' : req.body.userIdSender},{$addToSet: {'userId' :{ id : req.body.userIdRecipient, statusId : 1,  status : 'request send' }}});
- }
-}); */
 export default friendRequest;
