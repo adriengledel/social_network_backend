@@ -1,4 +1,5 @@
 import User from "../schema/schemaUser.js";
+import friends from "../schema/schemaFriend.js";
 import passwordHash from "password-hash";
 
 function login(req, res) {
@@ -27,12 +28,15 @@ function login(req, res) {
                     docs.forEach(function (doc) {
                         users[doc._id] = doc;
                     });
-                  res.status(200).json({
-                      "token" : user.getToken(),
-                      "text"  : "Authentification réussi",
-                      "user"  : user,
-                      "users" : users
-                  })
+                    friends.find({}, function(err, friends){
+                        res.status(200).json({
+                            "token" : user.getToken(),
+                            "text"  : "Authentification réussi",
+                            "user"  : user,
+                            "users" : users,
+                            "friends" : friends
+                        });
+                    });
                 });
               } else {
                   res.status(401).json({

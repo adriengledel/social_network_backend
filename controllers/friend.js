@@ -1,15 +1,15 @@
 import friends from "../schema/schemaFriend.js";
 
-function friendRequest(req, res) {
-  console.log(req.body)
+export function friendRequest(req, res) {
+  console.log('requete :', req.body)
   var friendSender = {
     id : req.body.userIdSender,
-    userId : [{ id : req.body.userIdRecipient, statusId : 1 }]
+    userId : [{ id : req.body.userIdRecipient, statusId : 2 }]
   }
 
   var friendRecipient = {
     id : req.body.userIdRecipient,
-    userId : [{ id : req.body.userIdRecipient, statusId : 5 }]
+    userId : [{ id : req.body.userIdSender, statusId : 5 }]
   }
 
   friends.findOne({ id : req.body.userIdSender }, (err, result) =>{
@@ -22,7 +22,7 @@ function friendRequest(req, res) {
         { $addToSet: 
           {userId :
             { id : req.body.userIdRecipient, 
-              statusId :req.body.statusSender
+              statusId : 2
             }
           }
         }, function(err, result){
@@ -42,7 +42,7 @@ function friendRequest(req, res) {
         { $addToSet:
           {userId :
             { id : req.body.userIdSender, 
-              statusId : req.body.statusRecipient
+              statusId : 5
             }
           }
         },  function(err, result){
@@ -53,4 +53,30 @@ function friendRequest(req, res) {
 
 }
 
-export default friendRequest;
+
+export function updateFriend(req, res){
+  console.log(req.body)
+  friends.findOneAndUpdate(
+    { id : req.body.userIdSender,  'userId.id' : req.body.userIdRecipient },
+      { $set:
+        {
+          'userId.$.statusId' :  req.body.statusIdSender
+        }
+      }, 
+      function(err, result){
+          
+      });
+  
+  
+  friends.findOneAndUpdate(
+    {id : req.body.userIdRecipient, 'userId.id' : req.body.userIdSender },
+      { $set:
+        {
+          'userId.$.statusId' :  req.body.statusIdRecipient
+        }
+      }, 
+      function(err, result){
+          
+      });
+  }
+  
