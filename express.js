@@ -6,6 +6,7 @@ import auth from './routes/auth';
 import update from './routes/update';
 import friend from './routes/friend';
 
+
 /* import path from 'path'
 import cookieParser from 'cookie-parser'
 import compress from 'compression'
@@ -14,7 +15,6 @@ import Template from './../template'
 import authRoute from './routes/auth'; */
 
 const app = express();
-
 
 app.use(cors());
 app.use(bodyParser.json());

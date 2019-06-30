@@ -1,5 +1,21 @@
 import mongoose   from "mongoose";
 import app from './express';
+import {friendRequest, updateFriend} from './controllers/friend';
+
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('friendRequest', data => {
+    console.log('my emit ', data)
+    friendRequest(data, socket);
+  });
+  socket.on('updateFriend', data => {
+    console.log('my emit ', data)
+    updateFriend(data, socket);
+  });
+});
 
 //Connexion à la base de donnée
 mongoose.connect('mongodb://localhost/socialNetwork', { useNewUrlParser: true }).then(() => {
@@ -14,5 +30,5 @@ app.get('/hello',function(req,res){
   });
 //Définition et mise en place du port d'écoute
 const port = 8000;
-app.listen(port, () => console.log(`Listening on port ${port}`));
+http.listen(port, () => console.log(`Listening on port ${port}`));
 

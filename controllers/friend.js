@@ -1,82 +1,108 @@
 import friends from "../schema/schemaFriend.js";
 
-export function friendRequest(req, res) {
-  console.log('requete :', req.body)
+export function friendRequest(req, socket) {
   var friendSender = {
-    id : req.body.userIdSender,
-    userId : [{ id : req.body.userIdRecipient, statusId : 2 }]
+    id: req.userIdSender,
+    userId: [{
+      id: req.userIdRecipient,
+      statusId: 2
+    }]
   }
 
   var friendRecipient = {
-    id : req.body.userIdRecipient,
-    userId : [{ id : req.body.userIdSender, statusId : 5 }]
+    id: req.userIdRecipient,
+    userId: [{
+      id: req.userIdSender,
+      statusId: 5
+    }]
   }
-
-  friends.findOne({ id : req.body.userIdSender }, (err, result) =>{
-    if(result === null){
-      new friends(friendSender).save();
-    }
-    else {
-      friends.updateOne(
-        { id :req.body.userIdSender},
-        { $addToSet: 
-          {userId :
-            { id : req.body.userIdRecipient, 
-              statusId : 2
+  new Promise(function (resolve, reject) {
+    friends.findOne({
+      id: req.userIdSender
+    }, (err, result) => {
+      if (result === null) {
+        new friends(friendSender).save();
+      } else {
+        friends.updateOne({
+          id: req.userIdSender
+        }, {
+          $addToSet: {
+            userId: {
+              id: req.userIdRecipient,
+              statusId: 2
             }
           }
-        }, function(err, result){
-        console.log(err)
-        console.log(result);
-      });
-    }
-  });
+        }, function (err, result) {
 
-  friends.findOne({ id : req.body.userIdRecipient }, (err, result) =>{
-    if(result === null){
-      new friends(friendRecipient).save();  
-    }
-    else {
-      friends.updateOne(
-        { id :req.body.userIdRecipient},
-        { $addToSet:
-          {userId :
-            { id : req.body.userIdSender, 
-              statusId : 5
+        });
+      }
+    });
+
+    friends.findOne({
+      id: req.userIdRecipient
+    }, (err, result) => {
+      if (result === null) {
+        new friends(friendRecipient).save();
+        resolve(true);
+      } else {
+        friends.updateOne({
+          id: req.userIdRecipient
+        }, {
+          $addToSet: {
+            userId: {
+              id: req.userIdSender,
+              statusId: 5
             }
           }
-        },  function(err, result){
-            
-            });
-    }
+        }, function (err, result) {
+          resolve(true);
+        });
+      }
+    });
+    
+  }).then(function () {
+    friends.find({},function (err, result) {
+      console.log('emit')
+      socket.broadcast.emit('friendsData', result);
+      socket.emit('friendsData', result);
+    });
   });
+
 
 }
 
 
-export function updateFriend(req, res){
-  console.log(req.body)
-  friends.findOneAndUpdate(
-    { id : req.body.userIdSender,  'userId.id' : req.body.userIdRecipient },
-      { $set:
-        {
-          'userId.$.statusId' :  req.body.statusIdSender
-        }
-      }, 
-      function(err, result){
-          
-      });
+export function updateFriend(req, socket) {
+  new Promise(function(resolve, reject){
+    friends.findOneAndUpdate({
+      id: req.userIdSender,
+      'userId.id': req.userIdRecipient
+    }, {
+      $set: {
+        'userId.$.statusId': req.statusIdSender
+      }
+    },
+    function (err, result) {
+
+    });
+
+
+  friends.findOneAndUpdate({
+      id: req.userIdRecipient,
+      'userId.id': req.userIdSender
+    }, {
+      $set: {
+        'userId.$.statusId': req.statusIdRecipient
+      }
+    },
+    function (err, result) {
+      resolve(true);
+    });
+  }).then(function(){
+    friends.find({},function (err, result) {
+      socket.broadcast.emit('friendsData', result);
+      socket.emit('friendsData', result);
+    });
+  });
   
-  
-  friends.findOneAndUpdate(
-    {id : req.body.userIdRecipient, 'userId.id' : req.body.userIdSender },
-      { $set:
-        {
-          'userId.$.statusId' :  req.body.statusIdRecipient
-        }
-      }, 
-      function(err, result){
-          
-      });
-  }
-  
+}
