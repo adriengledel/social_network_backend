@@ -1,6 +1,6 @@
 import mongoose   from "mongoose";
 import app from './express';
-import {friendRequest, updateFriend} from './controllers/friend';
+import {friendRequest, updateFriend, recommendFriend, validRecommendFriend} from './controllers/friend';
 
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
@@ -14,6 +14,14 @@ io.on('connection', function(socket){
   socket.on('updateFriend', data => {
     console.log('my emit ', data)
     updateFriend(data, socket);
+  });
+  socket.on('recommendFriend', data => {
+    console.log('my emit ', data)
+    recommendFriend(data, socket);
+  });
+  socket.on('validRecommendFriend', data => {
+    console.log('my emit ', data)
+    validRecommendFriend(data, socket);
   });
 });
 

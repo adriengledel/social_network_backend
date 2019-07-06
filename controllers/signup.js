@@ -1,6 +1,6 @@
 import User from "../schema/schemaUser.js";
 import passwordHash from "password-hash";
-import sendEmail from "../mailSender/mailSender";
+import sendEmail from "../mailSender/welcomeMail";
 
 
 function signup(req, res) {
