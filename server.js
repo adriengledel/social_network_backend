@@ -1,6 +1,9 @@
 import mongoose   from "mongoose";
 import app from './express';
 import {friendRequest, updateFriend, recommendFriend, validRecommendFriend} from './controllers/friend';
+import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
+
+mongoose.set('useFindAndModify', false);
 
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
@@ -22,6 +25,22 @@ io.on('connection', function(socket){
   socket.on('validRecommendFriend', data => {
     console.log('my emit ', data)
     validRecommendFriend(data, socket);
+  });
+  socket.on('messageRequest', data => {
+    console.log('my emit ', data)
+    messageRequest(data, socket);
+  });
+  socket.on('deleteMessageWall', data => {
+    console.log('my emit ', data)
+    deleteMessage(data, socket);
+  });
+  socket.on('responseRequest', data => {
+    console.log('my emit ', data)
+    responseRequest(data, socket);
+  });
+  socket.on('deleteResponse', data => {
+    console.log('my emit ', data)
+    deleteResponse(data, socket);
   });
 });
 
