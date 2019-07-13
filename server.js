@@ -2,6 +2,7 @@ import mongoose   from "mongoose";
 import app from './express';
 import {friendRequest, updateFriend, recommendFriend, validRecommendFriend} from './controllers/friend';
 import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
+import { createTopic, deleteTopic, addFriendToTopic } from './controllers/topic';
 
 mongoose.set('useFindAndModify', false);
 
@@ -41,6 +42,18 @@ io.on('connection', function(socket){
   socket.on('deleteResponse', data => {
     console.log('my emit ', data)
     deleteResponse(data, socket);
+  });
+  socket.on('createTopic', data => {
+    console.log('my emit ', data)
+    createTopic(data, socket);
+  });
+  socket.on('deleteTopic', data => {
+    console.log('my emit ', data)
+    deleteTopic(data, socket);
+  });
+  socket.on('addFriendToTopic', data => {
+    console.log('my emit ', data)
+    addFriendToTopic(data, socket);
   });
 });
 
