@@ -2,7 +2,14 @@ import mongoose   from "mongoose";
 import app from './express';
 import {friendRequest, updateFriend, recommendFriend, validRecommendFriend} from './controllers/friend';
 import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
-import { createTopic, deleteTopic, addFriendToTopic } from './controllers/topic';
+import { 
+  createTopic, 
+  deleteTopic, 
+  addFriendToTopic, 
+  joinTopic, 
+  messageTopic, 
+  deleteMessageTopic 
+} from './controllers/topic';
 
 mongoose.set('useFindAndModify', false);
 
@@ -45,7 +52,9 @@ io.on('connection', function(socket){
   });
   socket.on('createTopic', data => {
     console.log('my emit ', data)
-    createTopic(data, socket);
+    socket.join(data.topicId, ()=> {
+      createTopic(data, socket);
+    });
   });
   socket.on('deleteTopic', data => {
     console.log('my emit ', data)
@@ -54,6 +63,23 @@ io.on('connection', function(socket){
   socket.on('addFriendToTopic', data => {
     console.log('my emit ', data)
     addFriendToTopic(data, socket);
+  });
+  socket.on('room', function(room) {
+    console.log(room)
+    socket.join(room.topicId, ()=> {
+      joinTopic(room, socket);
+    });
+    if(room.room){
+      io.sockets.in(room.room).emit('message', 'hello from server');
+    }
+  });
+  socket.on('messageTopic', data => {
+    console.log('my emit ',data);
+    messageTopic(data, socket);
+  });
+  socket.on('deleteMessageTopic', data => {
+    console.log('my emit ',data)
+    deleteMessageTopic(data, socket); 
   });
 });
 
