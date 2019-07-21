@@ -60,7 +60,7 @@ export function joinTopic(req, socket){
         }
       }
     }, (err, result) => {
-      topics.find({topicId : req.topicId}, function (err, results) {
+      topics.find({}, function (err, results) {
         console.log('join', results)
         socket.emit('topicsData', results);
         socket.broadcast.emit('topicsData', results);
@@ -82,8 +82,8 @@ export function messageTopic(req, socket){
       topics.find({}, function (err, results) {
         console.log(results)
         socket.emit('topicsData', results);
-        socket.broadcast.emit('topicsData', results);
-        socket.to(req.topicId).emit('topicsData', results);
+        /* socket.broadcast.emit('topicsData', results); */
+        socket.broadcast.to(req.topicId).emit('topicsData', results);
       });
     });
 }
@@ -93,7 +93,7 @@ export function deleteMessageTopic(req, socket){
     {
       $pull : {
         messages : {
-          id : req.messageId
+          messageId : req.messageId
         }
       }
     }, (err, result) => {
@@ -104,4 +104,35 @@ export function deleteMessageTopic(req, socket){
         socket.to(req.topicId).emit('topicsData', results);
       });
     });
+}
+
+export function leaveTopic(req, socket){
+  topics.updateOne({topicId : req.topicId},
+    {
+      $pull : {
+        confirmId : {
+          id : req.userId
+        },
+        inviteId : {
+          id : req.userId
+        }
+      }
+    }, (err, result) => {
+      topics.find({}, function (err, results) {
+        console.log(results)
+        let test = results.filter(topic => req.topicId !== topic.topicId);
+        socket.emit('topicsData', test);
+        /* socket.broadcast.emit('topicsData', results); */
+        socket.to(req.topicId).emit('topicsData', results);
+        socket.leave(req.topicId)
+      });
+    });
+}
+
+export function connectTopic(req, socket){
+  topics.find({}, function (err, results) {
+    console.log(results)
+    let test = results.filter(topic => req.topicId !== topic.topicId);
+    socket.emit('topicsData', test);
+  });
 }

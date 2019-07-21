@@ -8,7 +8,9 @@ import {
   addFriendToTopic, 
   joinTopic, 
   messageTopic, 
-  deleteMessageTopic 
+  deleteMessageTopic,
+  leaveTopic ,
+  connectTopic
 } from './controllers/topic';
 
 mongoose.set('useFindAndModify', false);
@@ -50,15 +52,27 @@ io.on('connection', function(socket){
     console.log('my emit ', data)
     deleteResponse(data, socket);
   });
+  // Forum
   socket.on('createTopic', data => {
     console.log('my emit ', data)
     socket.join(data.topicId, ()=> {
       createTopic(data, socket);
     });
+    console.log(socket.rooms)
+  });
+  socket.on('connectTopic', data => {
+    console.log('connectTopic ', data)
+    socket.join(data.topicId/* , ()=>{
+      connectTopic(data, socket);
+    } */);
   });
   socket.on('deleteTopic', data => {
     console.log('my emit ', data)
     deleteTopic(data, socket);
+  });
+  socket.on('leaveTopic', data => {
+    console.log('my emit ', data)
+    leaveTopic(data, socket);
   });
   socket.on('addFriendToTopic', data => {
     console.log('my emit ', data)
@@ -75,10 +89,11 @@ io.on('connection', function(socket){
   });
   socket.on('messageTopic', data => {
     console.log('my emit ',data);
+    console.log(socket.rooms);
     messageTopic(data, socket);
   });
   socket.on('deleteMessageTopic', data => {
-    console.log('my emit ',data)
+    console.log('deleteMessageTopic ',data)
     deleteMessageTopic(data, socket); 
   });
 });

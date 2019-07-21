@@ -4,25 +4,28 @@ import sendEmail from "../mailSender/welcomeMail";
 
 
 function signup(req, res) {
+    console.log('signup', req.body)
     var user = {
-        pseudo : req.body.pseudo,
-        email: req.body.email,
-        password: passwordHash.generate(req.body.password),
-        firstName : req.body.firstName,
-        lastName : req.body.lastName,
-        age : req.body.age,
-        genre : req.body.genre,
-        avatarUrl: req.body.avatarUrl,
-        avatarFile: req.body.avatarFile,
+        pseudo      : req.body.pseudo,
+        email       : req.body.email,
+        role        : "standard",
+        password    : passwordHash.generate(req.body.password),
+        firstName   : req.body.firstName,
+        lastName    : req.body.lastName,
+        age         : req.body.age,
+        genre       : req.body.genre,
+        avatarUrl   : req.body.avatarUrl,
+        avatarFile  : req.body.avatarFile,
         presentation: req.body.presentation,
-        preferences: req.body.preferences,
+        preferences : req.body.preferences,
         contactInformation: req.body.contactInformation,
-        logged : false,
-        friends : {}
+        logged      : false,
+        friends     : {}
 
     }
     var findUser = new Promise(function (resolve, reject) {
-        User.findOne({
+        resolve(true)
+        /* User.findOne({
             email: user.email
         }, function (err, result) {
             if (err) {
@@ -34,7 +37,7 @@ function signup(req, res) {
                     resolve(true)
                 }
             }
-        })
+        }) */
     })
 
     findUser.then(function () {
