@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 var messagesSchema = mongoose.Schema({
   id       : { type : String },
   senderId : { type : String },
+  recipientId : { type : String },
   text     : { type : String },
   date     : { type : Date },
   responses : { type : Array }

@@ -8,6 +8,7 @@ export function messageRequest(req, socket) {
     messages: [{
       id : req.messageId,
       senderId: req.userIdSender,
+      recipientId : req.userIdRecipient,
       text: req.message,
       date: date
     }]
@@ -40,6 +41,7 @@ export function messageRequest(req, socket) {
           messages: {
             id : req.messageId,
             senderId: req.userIdSender,
+            recipientId : req.userIdRecipient,
             text: req.message,
             date: date
           }
@@ -85,13 +87,14 @@ export function deleteMessage(req, socket){
 
 export function responseRequest(req, socket){
   walls.findOneAndUpdate({
-    userId: req.userIdRecipient,
+    userId: req.wallId,
     'messages.id' : req.messageId
   },{
     $push: {
         'messages.$.responses' : {
           id       : req.subMessageId,
           senderId : req.userIdSender,
+          recipientId : req.userIdRecipient,
           text     : req.message,
           date     : date
       }
