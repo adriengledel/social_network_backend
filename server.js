@@ -2,6 +2,7 @@ import mongoose   from "mongoose";
 import app from './express';
 import {friendRequest, updateFriend, recommendFriend, validRecommendFriend} from './controllers/friend';
 import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
+import { updateUser } from './controllers/users';
 import { 
   createTopic, 
   deleteTopic, 
@@ -95,6 +96,10 @@ io.on('connection', function(socket){
   socket.on('deleteMessageTopic', data => {
     console.log('deleteMessageTopic ',data)
     deleteMessageTopic(data, socket); 
+  });
+  socket.on('updateUser', data => {
+    console.log('updateUser', data);
+    updateUser(data, socket);
   });
 });
 
