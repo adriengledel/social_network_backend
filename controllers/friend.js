@@ -179,3 +179,38 @@ export function recommendFriend(req, socket) {
     });
 
   }
+
+  export function deleteFriend(req, socket) {
+    new Promise(function (resolve, reject) {
+      friends.findOneAndUpdate({
+          id: req.accountId
+        }, {
+          $pull: {
+            userId: {
+              id: req.friendId
+            }
+          }
+        },
+        function (err, result) {
+          console.log(result)
+        });
+      friends.findOneAndUpdate({
+        id: req.friendId
+        }, {
+          $pull: {
+            userId: {
+              id: req.accountId
+            }
+          }
+        }, function (err, result) {
+        resolve(true);
+        });
+    }).then(function () {
+      friends.find({}, function (err, result) {
+        socket.broadcast.emit('friendsData', result);
+        socket.emit('friendsData', result);
+      });
+    });
+
+  }
+

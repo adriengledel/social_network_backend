@@ -1,6 +1,6 @@
 import mongoose   from "mongoose";
 import app from './express';
-import {friendRequest, updateFriend, recommendFriend, validRecommendFriend} from './controllers/friend';
+import {friendRequest, updateFriend, recommendFriend, validRecommendFriend, deleteFriend} from './controllers/friend';
 import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
 import { updateUser } from './controllers/users';
 import { 
@@ -26,7 +26,7 @@ io.on('connection', function(socket){
     friendRequest(data, socket);
   });
   socket.on('updateFriend', data => {
-    console.log('my emit ', data)
+    console.log('updateFriend', data)
     updateFriend(data, socket);
   });
   socket.on('recommendFriend', data => {
@@ -36,6 +36,10 @@ io.on('connection', function(socket){
   socket.on('validRecommendFriend', data => {
     console.log('my emit ', data)
     validRecommendFriend(data, socket);
+  });
+  socket.on('deleteFriend', data => {
+    console.log('deleteFriend', data)
+    deleteFriend(data, socket);
   });
   socket.on('messageRequest', data => {
     console.log('my emit ', data)
