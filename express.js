@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import signupRoute from './routes/signup';
 import auth from './routes/auth';
 import update from './routes/update';
-import friend from './routes/friend';
+import lostpassword from './routes/lostpassword';
 
 
 /* import path from 'path'
@@ -25,7 +25,7 @@ app.use(express.static("public"));
 app.use('/', signupRoute);
 app.use('/', auth);
 app.use('/', update);
-app.use('/', friend);
+app.use('/', lostpassword);
 
 
 export default app;
