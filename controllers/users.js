@@ -24,3 +24,37 @@ export function updateUser(req, socket){
     });
   });
 }
+
+export function isLogged(id, socket){
+  users.findOneAndUpdate({_id : id},
+    {
+      logged : true
+    },
+    () => {
+    users.find({}, (err, docs) => {
+      var usersItems = {};
+      docs.forEach(function (doc) {
+        usersItems[doc._id] = doc;
+      });
+      socket.emit('updateUsers', usersItems);
+      socket.broadcast.emit('updateUsers', usersItems);
+    });
+  });
+}
+
+export function isLogout(id, socket){
+  users.findOneAndUpdate({_id : id},
+    {
+      logged : false
+    },
+    () => {
+    users.find({}, (err, docs) => {
+      var usersItems = {};
+      docs.forEach(function (doc) {
+        usersItems[doc._id] = doc;
+      });
+      socket.emit('updateUsers', usersItems);
+      socket.broadcast.emit('updateUsers', usersItems);
+    });
+  });
+}

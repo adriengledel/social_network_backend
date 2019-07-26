@@ -20,24 +20,23 @@ function signup(req, res) {
         preferences : req.body.preferences,
         contactInformation: req.body.contactInformation,
         logged      : false,
-        friends     : {}
-
     }
     var findUser = new Promise(function (resolve, reject) {
-        resolve(true)
-        /* User.findOne({
+        User.findOne({
             email: user.email
         }, function (err, result) {
+            console.log(err, result)
             if (err) {
                 reject(500);
             } else {
                 if (result) {
+                    console.log('reject')
                     reject(204)
                 } else {
                     resolve(true)
                 }
             }
-        }) */
+        })
     })
 
     findUser.then(function () {
@@ -61,7 +60,7 @@ function signup(req, res) {
                 })
                 break;
             case 204:
-                res.status(204).json({
+                res.json({
                     "text": "L'adresse email existe déjà"
                 })
                 break;

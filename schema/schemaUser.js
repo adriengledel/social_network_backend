@@ -3,8 +3,16 @@ const passwordHash = require('password-hash');
 const jwt = require('jwt-simple');
 const config = require('../config/config');
 
+var avatarSchema = mongoose.Schema({
+	avatarName : {
+		type : String,
+		default : 'none',
+	},
+	avatarData : { type : String}
+});
+
 var userSchema = mongoose.Schema({
-	logged : false,
+	logged : {type : Boolean},
 	email: {
 		type: String,
 	/* 	lowercase: true,
@@ -22,6 +30,7 @@ var userSchema = mongoose.Schema({
 	lastName : {trim: true,type: String},
 	age : {trim: true,type: String},
 	genre :{trim: true,type: String},
+	avatar   : [avatarSchema],
 	avatarUrl: {trim: true,type: String},
 	avatarFile: {trim: true,type: Object},
 	presentation: {trim: true,type: String},

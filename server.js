@@ -2,7 +2,10 @@ import mongoose   from "mongoose";
 import app from './express';
 import {friendRequest, updateFriend, recommendFriend, validRecommendFriend, deleteFriend} from './controllers/friend';
 import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
-import { updateUser } from './controllers/users';
+import { updateUser, isLogged, isLogout } from './controllers/users';
+import jwt from 'jsonwebtoken';
+const config = require('./config/config'); 
+
 import { 
   createTopic, 
   deleteTopic, 
@@ -19,8 +22,27 @@ mongoose.set('useFindAndModify', false);
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+let usersConnected = [];
 io.on('connection', function(socket){
-  console.log('a user connected');
+  socket.emit('usersConnected', usersConnected);
+  
+
+
+  socket.on('identify', ({token}) => {
+    console.log(token)
+    try {
+      let decode = jwt.verify(token, config.secret, {
+        algorithms : ['HS256']
+      });
+      isLogged(decode._id, socket);
+      usersConnected.push(decode._id);
+      socket.broadcast.emit('usersConnected', usersConnected);
+    }
+    catch(err){
+      console.log(err);
+    }
+  });
+
   socket.on('friendRequest', data => {
     console.log('my emit ', data)
     friendRequest(data, socket);
@@ -104,6 +126,16 @@ io.on('connection', function(socket){
   socket.on('updateUser', data => {
     console.log('updateUser', data);
     updateUser(data, socket);
+  });
+  socket.on('logout', id => {
+    console.log('user disconnected');
+    isLogout(id, socket);
+    usersConnected.pop();
+    socket.broadcast.emit('usersConnected', usersConnected);
+  });
+  socket.on('disconnect', id => {
+    console.log('user disconnected');
+    isLogout(id, socket);
   });
 });
 
