@@ -4,6 +4,7 @@ import {friendRequest, updateFriend, recommendFriend, validRecommendFriend, dele
 import { messageRequest, deleteMessage, responseRequest, deleteResponse } from './controllers/walls';
 import { updateUser, isLogged, isLogout } from './controllers/users';
 import jwt from 'jsonwebtoken';
+require('dotenv').config();
 const config = require('./config/config'); 
 
 import { 
@@ -167,7 +168,7 @@ io.on('connection', function(socket){
 });
 
 //Connexion à la base de donnée
-mongoose.connect('mongodb://localhost/socialNetwork', { useNewUrlParser: true }).then(() => {
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true }).then(() => {
     console.log('Connected to mongoDB')
 }).catch(e => {
     console.log('Error while DB connecting');

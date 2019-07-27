@@ -5,6 +5,7 @@ import signupRoute from './routes/signup';
 import auth from './routes/auth';
 import update from './routes/update';
 import lostpassword from './routes/lostpassword';
+require('dotenv').config();
 
 
 /* import path from 'path'

@@ -12,11 +12,11 @@ const sendEmail = (email, res) => {
     html: '<p>HTML version of the message</p>'
   };
   
-  let transporter = nodemailer.createTransport({
-    service: 'Gmail',
+  const transporter = nodemailer.createTransport({
+    service: process.env.NODEMAILER_SERVICE,
     auth: {
-      user: 'adriengledel@gmail.com',
-      pass: 'MpC12bgSd45'
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS
     },
     tls:{
       rejectUnauthorized: false

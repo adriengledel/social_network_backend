@@ -14,18 +14,18 @@ const sendEmail = (data) => {
     text: 'Plaintext version of the message',
     html: `<p> ${name} vous a envoyé une demande de chat privée</p>`
   };
-  
-  let transporter = nodemailer.createTransport({
-    service: 'Gmail',
+
+  const transporter = nodemailer.createTransport({
+    service: process.env.NODEMAILER_SERVICE,
     auth: {
-      user: 'adriengledel@gmail.com',
-      pass: 'MpC12bgSd45'
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS
     },
     tls:{
       rejectUnauthorized: false
     }
   });
-  
+
   transporter.sendMail(chatInvitation , function(error, info){
     if (error) {
       console.log(error);
