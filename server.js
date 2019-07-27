@@ -25,22 +25,25 @@ var io = require('socket.io')(http);
 let usersConnected = [];
 let usersData = {};
 io.on('connection', function(socket){
-  console.log(socket.id)
+  console.log(usersConnected)
   socket.emit('usersConnected', usersConnected);
   
   socket.on('identify', ({token}) => {
     console.log(token)
-
     try {
       let decode = jwt.verify(token, config.secret, {
         algorithms : ['HS256']
       });
-      isLogged(decode._id, socket);
-      usersConnected.push(decode._id);
-      usersData = {...usersData, [socket.id] : {userId :decode._id}};
 
-      socket.broadcast.emit('usersConnected', usersConnected);
-      console.log('usersData', usersData);
+      if(!usersConnected.includes(decode._id)){
+        isLogged(decode._id, socket);
+        usersConnected.push(decode._id);
+        usersData = {...usersData, [socket.id] : {userId :decode._id}};
+        socket.broadcast.emit('usersConnected', usersConnected);
+        socket.emit('usersConnected', usersConnected);
+        console.log(usersConnected);
+        console.log(usersData)
+      }
     }
     catch(err){
       console.log(err);
@@ -132,20 +135,33 @@ io.on('connection', function(socket){
     });
     socket.on('logout', id => {
       console.log('user disconnected');
-      isLogout(id, socket);
-      usersConnected.pop();
-      socket.broadcast.emit('usersConnected', usersConnected);
+      console.log(socket.id)
+      console.log(usersData)
+      if(usersData[socket.id]){
+        isLogout(id, socket);
+        usersConnected.splice(usersData[socket.id].userId);
+        socket.broadcast.emit('usersConnected', usersConnected);
+        delete usersData[socket.id];
+        console.log(usersConnected);
+        console.log(usersData)
+      }
     });
 
   });
 
-  socket.on('disconnect', id => {
+  socket.on('disconnect', () => {
+    socket.disconnect();
     console.log('user disconnected ');
     console.log(socket.id)
+    console.log(usersData)
     if(usersData[socket.id]){
+      console.log('okkkkkkkkkkk')
       isLogout(usersData[socket.id].userId, socket);
+      usersConnected.splice(usersData[socket.id].userId);
+      delete usersData[socket.id];
+      console.log(usersConnected);
+      console.log(usersData)
     }
-    usersConnected.pop();
     socket.broadcast.emit('usersConnected', usersConnected);
   });
 });
