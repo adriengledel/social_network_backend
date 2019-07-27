@@ -1,5 +1,6 @@
 import friends from "../schema/schemaFriend.js";
-import sendEmail from "../mailSender/friendRequestMail";
+import sendEmailRequestFriend from "../mailSender/friendRequestMail";
+import sendEmailRecommendFriend from "../mailSender/recommendFriendMail";
 
 
 export function friendRequest(req, socket) {
@@ -67,7 +68,7 @@ export function friendRequest(req, socket) {
       console.log('emit')
       socket.broadcast.emit('friendsData', result);
       socket.emit('friendsData', result);
-      /* sendEmail(req.email); */
+      sendEmailRequestFriend(req.email);
     });
   });
 
@@ -131,6 +132,7 @@ export function recommendFriend(req, socket) {
     friends.find({}, function (err, result) {
       socket.broadcast.emit('friendsData', result);
       socket.emit('friendsData', result);
+      sendEmailRecommendFriend(req.email);
     });
   });
 }

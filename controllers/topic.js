@@ -1,4 +1,5 @@
 import topics from "../schema/schemaTopic";
+import sendMail from "../mailSender/chatInvitation";
 
 var date = new Date();
 
@@ -41,6 +42,7 @@ export function addFriendToTopic(req, socket){
       topics.find({}, function (err, results) {
         socket.emit('topicsData', results);
         socket.broadcast.emit('topicsData', results);
+        sendMail(req.email);
       });
     });
 }

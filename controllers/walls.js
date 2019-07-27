@@ -1,4 +1,5 @@
 import walls from "../schema/schemaWall";
+import sendMail from "../mailSender/wallMessageMail";
 
 var date = new Date();
 
@@ -18,7 +19,6 @@ export function messageRequest(req, socket) {
     userId: req.userIdRecipient
   }, (err, result) => {
     if (result === null) {
-      console.log("1")
       new walls(wall).save().then(() => {
         walls.find({}, function (err, results) {
           var datas = {};
@@ -30,10 +30,12 @@ export function messageRequest(req, socket) {
           console.log('emit')
           socket.broadcast.emit('wallsData', datas);
           socket.emit('wallsData', datas);
+          if(req.email){
+            sendMail(req.email);
+          }
         });
       });
     } else {
-      console.log("2")
       walls.updateOne({
         userId: req.userIdRecipient
       }, {
@@ -56,6 +58,9 @@ export function messageRequest(req, socket) {
           console.log('emit')
           socket.broadcast.emit('wallsData', wall);
           socket.emit('wallsData', wall);
+          if(req.email){
+            sendMail(req.email);
+          }
         });
       });
     }
